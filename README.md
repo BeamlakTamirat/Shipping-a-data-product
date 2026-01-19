@@ -155,3 +155,5 @@ See `docs/detections_joining.md` for details on joining detections back to messa
 - Keep your `.env` file secure and never push it to GitHub!
 - The project is modular, scalable, and reproducible
 - Use the API endpoints to answer key business questions about medical products and channel activity
+
+<!-- update 25 -->
