@@ -1,164 +1,231 @@
-# 📊 Telegram Medical Insights
+<div align="center">
 
-An end-to-end, modular data platform for extracting, transforming, enriching, and serving analytics on Ethiopian medical business data from public Telegram channels.
+# 🏥 Medical Data Intelligence Platform
 
----
+### *Transform Telegram chatter into actionable medical business insights*
 
-## 📝 Project Overview
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Modern-009688.svg)](https://fastapi.tiangolo.com)
+[![dbt](https://img.shields.io/badge/dbt-Transform-FF6849.svg)](https://www.getdbt.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-This project enables:
+[Quick Start](#-quick-start) • [Architecture](#-architecture) • [Features](#-features) • [API](#-api-endpoints)
 
-- **Scraping** Telegram channels for messages and images (`src/scraper.py`)
-- **Storing** raw data (JSON, images) in `data/raw/telegram_messages/`
-- **Loading & transforming** data into PostgreSQL using dbt (`scripts/json_to_postgres.py`, `dbt/telegram_dbt/`)
-- **Enriching** image data with YOLOv8 object detection (`yolo_detection/`)
-- **Serving analytics** via a FastAPI backend (`fastapi_app/`)
-- **Orchestrating** the workflow with Dagster (`dags/`)
-- **Exploring & visualizing** data in Jupyter notebooks (`notebooks/`)
+</div>
 
 ---
 
-## 📂 Project Structure
+## 🎯 What Does This Do?
 
-```
-telegram-medical-insights/
-├── data/raw/telegram_messages/      # Raw Telegram data (JSON, images)
-├── dbt/telegram_dbt/                # dbt project for data modeling
-│   ├── models/example/              # Example dbt models
-│   ├── analyses/, macros/, seeds/, snapshots/, tests/
-├── dags/                            # Dagster orchestration jobs
-├── fastapi_app/                     # FastAPI backend for analytics
-├── models/marts/                    # Core analytical SQL models (star schema)
-├── src/                         # ETL scripts (scraper, loader)
-├── yolo_detection/                  # YOLOv8 image detection scripts
-├── notebooks/                       # Data exploration & visualization
-├── telegram_pipeline/               # Python package for pipeline assets
-├── Dockerfile, docker-compose.yml   # Containerization
-├── requirements.txt                 # Python dependencies
-├── .env                             # Secrets/config (not committed)
+Imagine having **instant access** to medical product trends, supplier activities, and market intelligence from Ethiopian Telegram channels—all without lifting a finger. This platform:
+
+```mermaid
+graph LR
+    A[📱 Telegram] -->|Scrape| B[🔄 ETL Pipeline]
+    B -->|Store| C[🗄️ PostgreSQL]
+    C -->|Transform| D[⚡ dbt Models]
+    D -->|Analyze| E[🤖 YOLOv8 + FastAPI]
+    E -->|Insight| F[📊 Analytics Dashboard]
+    
+    style A fill:#0088cc
+    style E fill:#FF6849
+    style F fill:#00C853
 ```
 
+Automatically **scrapes**, **enriches**, and **transforms** medical business data from Telegram into a production-ready data warehouse with REST APIs.
+
 ---
 
-## ⚙️ Setup & Usage
+## ✨ Features
 
-### 1. Clone & Configure
+<table>
+<tr>
+<td width="50%">
+
+### 🔍 Smart Data Collection
+- Auto-scrapes Telegram channels
+- Extracts messages + media
+- Handles rate limits gracefully
+
+### 🧠 AI-Powered Analysis
+- YOLOv8 object detection on images
+- Product mention tracking
+- Trend analysis over time
+
+</td>
+<td width="50%">
+
+### ⚡ Lightning-Fast APIs
+- RESTful endpoints via FastAPI
+- CSV export support
+- Real-time analytics
+
+### 📊 Data Warehouse
+- Star schema design
+- dbt-powered transformations
+- Full lineage tracking
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+> **Prerequisites:** Docker, Python 3.10+, Telegram API credentials
+
+### 1️⃣ Setup Environment
 
 ```bash
-git clone <repo-url>
-cd telegram-medical-insights
-```
+# Clone and navigate
+git clone <your-repo-url>
+cd Shipping-a-Data-Product-main
 
-Create a `.env` file with your Telegram API keys and PostgreSQL credentials:
-
-```
-TELEGRAM_API_ID=...
-TELEGRAM_API_HASH=...
-TELEGRAM_SESSION=...
+# Create .env file
+cat > .env << EOF
+TELEGRAM_API_ID=your_api_id
+TELEGRAM_API_HASH=your_api_hash
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
-POSTGRES_DB=telegram_data
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
+POSTGRES_DB=medical_data
+EOF
 ```
 
-### 2. Start Services
+### 2️⃣ Launch Infrastructure
 
 ```bash
 docker-compose up -d
 ```
 
-This starts PostgreSQL and any other defined services.
-
-### 3. Scrape Telegram Data
+### 3️⃣ Run the Pipeline
 
 ```bash
+# Scrape data
 python src/scraper.py
-```
 
-Collects messages and images from configured Telegram channels.
-
-### 4. Load Data into PostgreSQL
-
-```bash
+# Load to database
 python src/json_to_postgres.py
+
+# Transform with dbt
+cd dbt/medical_warehouse && dbt run
+
+# Start API server
+cd fastapi_app && uvicorn main:app --reload
 ```
 
-Loads raw JSON messages into the `raw.telegram_messages` table.
+**That's it!** 🎉 Visit `http://localhost:8000/docs` for interactive API documentation.
 
-### 5. Run dbt Transformations
+---
 
-```bash
-cd dbt/telegram_dbt
-dbt run           # Build models (staging, fact, dimension)
-dbt test          # Run data quality tests
-dbt docs generate # Generate documentation
-dbt docs serve    # View docs/lineage in browser
+## 🏗️ Architecture
+
+```
+.
+├── 📦 src/                    # ETL scripts
+│   ├── scraper.py            # Telegram data extraction
+│   └── json_to_postgres.py   # Database loader
+│
+├── 🔄 dbt/                    # Data transformation layer
+│   └── medical_warehouse/    # dbt project
+│       └── models/           # SQL transformations
+│
+├── 🤖 yolo_detection/         # AI image analysis
+│
+├── ⚡ fastapi_app/            # REST API server
+│
+├── 📊 notebooks/              # Analytics & visualizations
+│
+└── 🐳 docker-compose.yml      # Infrastructure as code
 ```
 
-Models are defined in `models/` and `models/marts/` (star schema: fact & dimension tables).
+---
 
-### 6. Enrich Images with YOLOv8
+## 🌐 API Endpoints
 
-See `yolo_detection/` for scripts and instructions to run object detection on images. Detected objects can be used to enrich analytics.
+### Core Analytics
 
-### 7. Start FastAPI Analytics Server
+| Endpoint | Description | Example |
+|----------|-------------|---------|
+| `GET /api/products/top` | Top mentioned medical products | `?limit=10` |
+| `GET /api/reports/visual-content` | Image detections with context | `?csv=true` |
+| `GET /api/channels/activity` | Channel activity metrics | `?date=2024-01` |
 
-See `fastapi_app/` for API endpoints and instructions to launch the analytics backend.
+### Example Response
 
-### 8. Orchestrate with Dagster
-
-See `dags/` for pipeline automation and orchestration jobs.
-
-### 9. Explore & Visualize Data
-
-Use Jupyter notebooks in `notebooks/` for:
-
-- Bar chart: Top 10 most mentioned medical products
-- Pie chart: Distribution of media types (text vs. images)
-- Custom analytics and EDA
+```json
+{
+  "product": "Paracetamol",
+  "mentions": 342,
+  "trend": "+15%",
+  "channels": ["MedSupply_ET", "PharmaHub"]
+}
+```
 
 ---
 
-## 🛠️ Technologies Used
+## 🛠️ Tech Stack
 
-- Python 3.10
-- PostgreSQL
-- dbt (Data Build Tool)
-- Telethon (Telegram API)
-- YOLOv8 (Ultralytics)
-- FastAPI (API backend)
-- Dagster (Orchestration)
-- Docker & Docker Compose
-- Jupyter (Visualization/EDA)
+<div align="center">
 
----
+| Layer | Technology |
+|-------|-----------|
+| **Data Ingestion** | Telethon (Telegram API) |
+| **Storage** | PostgreSQL |
+| **Transformation** | dbt Core |
+| **ML/AI** | YOLOv8 (Ultralytics) |
+| **API** | FastAPI |
+| **Orchestration** | Dagster |
+| **Infrastructure** | Docker Compose |
 
-## 📊 Visuals & Analytics
-
-- **Bar Chart:** Top 10 most mentioned medical products (see `notebooks/`)
-- **Pie Chart:** Distribution of media types (text vs. images)
-- **dbt Docs:** Interactive model lineage and documentation
+</div>
 
 ---
 
-## 🚀 CI & API Improvements
+## 📈 Sample Insights
 
-- New FastAPI endpoint: `/api/reports/visual-content` — returns image detection rows joined to message context and supports `?csv=true` to download results as CSV.
-- dbt seed `image_categories.csv` added to map `object_class` values to a higher-level `image_category`.
-- GitHub Actions CI workflow added at `.github/workflows/ci.yml` to run tests and lint on push/PR. A conditional dbt build step is included and will run when `DBT_CONN` secrets are available in the repository settings.
+<details>
+<summary>💊 <b>Top 10 Medical Products</b></summary>
 
-See `docs/detections_joining.md` for details on joining detections back to messages in the warehouse.
+Generated dynamically from Telegram mentions with trend analysis.
 
-## 🔐 Notes
+</details>
 
-- Keep your `.env` file secure and never push it to GitHub!
-- The project is modular, scalable, and reproducible
-- Use the API endpoints to answer key business questions about medical products and channel activity
+<details>
+<summary>📸 <b>Media Type Distribution</b></summary>
 
-<!-- update 25 -->
-<!-- update 26 -->
-<!-- update 27 -->
-<!-- update 28 -->
-<!-- update 29 -->
-<!-- update 31 -->
+Pie chart showing text-only vs. image-based messages.
+
+</details>
+
+<details>
+<summary>🔗 <b>dbt Lineage Graph</b></summary>
+
+Run `dbt docs serve` to explore the interactive data model lineage.
+
+</details>
+
+---
+
+## 🎯 Use Cases
+
+- **📊 Market Research:** Track product demand and supplier activity
+- **🔍 Competitive Analysis:** Monitor competitor pricing and inventory
+- **📈 Trend Forecasting:** Identify emerging medical products
+- **🤖 Automated Reporting:** Generate weekly insights via API
+
+---
+
+## 🤝 Contributing
+
+This is an active project! Contributions, issues, and feature requests are welcome.
+
+---
+
+<div align="center">
+
+
+
+⭐ Star this repo if you find it useful!
+
+</div>
